@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "\"Organisio\" is a creative, made-up word inspired by \"Organize\", giving it a modern and tech-friendly feel. The \"-sio\" at the end makes it sound sleek,It suggests a smart, efficient way to organize tasks, making it perfect for a task management app.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon ./backend/index.js",
     "start": "node ./backend/index.js"
@@ -29,6 +30,8 @@
   "homepage": "https://github.com/zohir96os/organisio#readme",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
