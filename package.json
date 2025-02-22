@@ -1,0 +1,38 @@
+{
+  "name": "organisio",
+  "version": "1.0.0",
+  "description": "\"Organisio\" is a creative, made-up word inspired by \"Organize\", giving it a modern and tech-friendly feel. The \"-sio\" at the end makes it sound sleek,It suggests a smart, efficient way to organize tasks, making it perfect for a task management app.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./backend/index.js",
+    "start": "node ./backend/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zohir96os/organisio.git"
+  },
+  "keywords": [
+    "organisio",
+    "taskapp",
+    "task",
+    "management",
+    "react",
+    "mern",
+    "nodejs",
+    "javascript"
+  ],
+  "author": "zohiros",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zohir96os/organisio/issues"
+  },
+  "homepage": "https://github.com/zohir96os/organisio#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.1",
+    "nodemon": "^3.1.9"
+  }
+}
