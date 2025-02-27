@@ -10,7 +10,7 @@ export default function MainButton({
       disabled={disabled}
       onClick={onClick}
       type={`"button|| ${type}}`}
-      className={`uppercase cursor-pointer rounded-xl p-3 outline-none  
+      className={` uppercase cursor-pointer rounded-xl p-3 outline-none  
       ${disabled ? "opacity-50 cursor-not-allowed" : "hover:opacity-80"} 
             ${
               className ||

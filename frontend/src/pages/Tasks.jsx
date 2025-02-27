@@ -100,7 +100,7 @@ export default function Tasks() {
     }
   };
   return (
-    <div className="flex flex-col justify-center items-center p-4 ">
+    <div className="flex flex-col justify-center items-center p-4 dark:bg-gray-950 ">
       <h1 className="text-2xl uppercase">Tasks</h1>
       {Array.isArray(tasks) && tasks.length > 0 ? (
         <ul>

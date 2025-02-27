@@ -50,7 +50,7 @@ export default function SignUp() {
 
   return (
     <div className="mx-auto w-lg p-3">
-      <h1 className="text-center text-3xl font-bold uppercase text-slate-700">
+      <h1 className="my-7 text-center text-2xl text-slate-900 uppercase dark:text-white ">
         Sign up
       </h1>
       <form
@@ -62,7 +62,7 @@ export default function SignUp() {
           name="username"
           id="username"
           placeholder="username"
-          className="border-2 border-teal-500 rounded-xl p-3 outline-none w-md"
+          className="border-2 border-teal-500 rounded-xl p-3 outline-none w-md dark:text-white dark:border dark:border-teal-400 "
           onChange={handleChange}
         />
         <input
@@ -70,7 +70,7 @@ export default function SignUp() {
           name="email"
           id="email"
           placeholder="email"
-          className="border-2 border-teal-500 rounded-xl p-3 outline-none w-md"
+          className="border-2 border-teal-500 rounded-xl p-3 outline-none w-md dark:text-white dark:border dark:border-teal-400 "
           onChange={handleChange}
         />
         <input
@@ -78,7 +78,7 @@ export default function SignUp() {
           name="password"
           id="password"
           placeholder="password"
-          className="border-2 border-teal-500 rounded-xl p-3 outline-none w-md"
+          className="border-2 border-teal-500 rounded-xl p-3 outline-none w-md dark:text-white dark:border dark:border-teal-400 "
           onChange={handleChange}
         />
         <MainButton
@@ -86,7 +86,7 @@ export default function SignUp() {
           disabled={loading}
           type="submit"
         />
-        <p>
+        <p className="dark:text-white">
           Already have an account?{" "}
           <Link className="text-blue-600" to="/signin">
             Sign in

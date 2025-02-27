@@ -7,11 +7,40 @@ import Tasks from "./pages/Tasks";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 import CreateTask from "./pages/CreateTask";
+import { useEffect, useState } from "react";
 
 export default function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      setIsDarkMode(savedTheme === "dark");
+    } else {
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      setIsDarkMode(prefersDark);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode ? "dark" : "light";
+    setIsDarkMode(!isDarkMode);
+    localStorage.setItem("theme", newTheme);
+  };
+
   return (
     <BrowserRouter>
-      <Header />
+      <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
       <Routes>
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<Home />} />

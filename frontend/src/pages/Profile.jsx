@@ -18,6 +18,7 @@ import {
 } from "../apps/user/userSlice";
 import Menu from "../components/Menu";
 import SuccessMessage from "../components/SuccessMessage";
+import ErrorMessage from "../components/ErrorMessage";
 export default function Profile() {
   const { loading, error, currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -120,10 +121,10 @@ export default function Profile() {
   };
   return (
     <div className="flex flex-col justify-center items-center">
-      <h1 className="text-center text-2xl text-slate-900 uppercase my-10">
+      <h1 className="my-7 text-center text-2xl text-slate-900 uppercase dark:text-white ">
         Profile
       </h1>
-      <form className="flex flex-col gap-2 shadow-lg p-4 rounded-md">
+      <form className="flex flex-col gap-2 shadow-lg p-4 rounded-md dark:border dark:border-teal-400  ">
         <input type="file" name="avatar" id="avatar" hidden />
         <img
           src={currentUser.avatar}
@@ -136,7 +137,7 @@ export default function Profile() {
           id="username"
           placeholder="username"
           value={formData.username}
-          className="shadow-lg my-5 rounded-xl p-2 outline-none "
+          className="shadow-lg my-5 rounded-xl p-2 outline-none dark:text-white dark:border dark:border-teal-400 "
           onChange={handleChange}
         />
         <input
@@ -145,7 +146,7 @@ export default function Profile() {
           id="email"
           placeholder="email"
           value={formData.email}
-          className="shadow-lg my-5 rounded-xl p-2 outline-none "
+          className="shadow-lg my-5 rounded-xl p-2 outline-none dark:text-white dark:border dark:border-teal-400 "
           onChange={handleChange}
         />
         <input
@@ -154,14 +155,14 @@ export default function Profile() {
           id="password"
           value={formData.password}
           placeholder="password"
-          className="shadow-lg my-5 rounded-xl p-2 outline-none "
+          className="shadow-lg my-5 rounded-xl p-2 outline-none dark:text-white dark:border dark:border-teal-400 "
           onChange={handleChange}
         />
         <MainButton
           inner={loading ? "Loading.." : "Update"}
           onClick={handleUpdate}
         />
-        {error && <p className="text-rose-700">{error}</p>}
+        <ErrorMessage message={error} />
         <SuccessMessage message={success} />
         <div className="flex justify-between items-center mt-5">
           <span
