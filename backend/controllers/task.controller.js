@@ -27,7 +27,10 @@ export const getTasks = async (req, res, next) => {
     const user = req.params.id;
     if (req.user.id !== req.params.id)
       return next(errorHandler(401, "You can only see your own tasks"));
-    const tasks = await Task.find({ user }).sort({ createdAt: -1 });
+    const tasks = await Task.find({ user }).sort({
+      createdAt: -1,
+      updupdatedAt: -1,
+    });
     if (tasks.length === 0) return next(errorHandler(404, "No tasks found"));
     res.status(200).json(tasks);
   } catch (error) {
@@ -70,5 +73,37 @@ export const updateTask = async (req, res, next) => {
     res.status(200).json({ task: updatedTask });
   } catch (error) {
     next(error);
+  }
+};
+
+export const searchTasks = async (req, res, next) => {
+  try {
+    const searchTerm = req.query.query || ""; // Default to empty string if not provided
+    const completedFilter = req.query.completedFilter; // 'true', 'false', or 'all'
+
+    // Base query: only tasks for the authenticated user
+    let query = { user: req.user.id };
+
+    // Add search term filter if provided
+    if (searchTerm) {
+      query.$or = [
+        { title: { $regex: searchTerm, $options: "i" } }, // Case-insensitive search in title
+        { description: { $regex: searchTerm, $options: "i" } }, // Case-insensitive search in description
+      ];
+    }
+
+    // Add completion status filter if provided
+    if (completedFilter === "true") {
+      query.isCompleted = true;
+    } else if (completedFilter === "false") {
+      query.isCompleted = false;
+    }
+    // If completedFilter is 'all' or undefined, no completion filter is applied
+
+    // Fetch tasks, sorted by creation date (newest first)
+    const tasks = await Task.find(query).sort({ createdAt: -1 });
+    res.status(200).json(tasks); // Return tasks (empty array if none found)
+  } catch (error) {
+    next(error); // Pass errors to error-handling middleware
   }
 };

@@ -6,7 +6,7 @@ export default function Header({ toggleTheme, isDarkMode }) {
   const { currentUser } = useSelector((state) => state.user);
 
   return (
-    <header className="flex justify-between items-center p-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white">
+    <header className="flex  w-full z-99 justify-between items-center p-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white">
       <div className="logo bg-gradient-to-r from-slate-800 to-slate-900 bg-clip-text text-white">
         <Link to="/">
           <h1 className="text-2xl font-bold uppercase">Organisio</h1>

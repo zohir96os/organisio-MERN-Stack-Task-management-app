@@ -3,11 +3,14 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import taskRoutes from "./routes/task.routes.js";
 
 dotenv.config();
+
+const __dirname = path.resolve();
 
 const app = express();
 
@@ -34,6 +37,11 @@ app.listen(PORT, () => {
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", taskRoutes);
+
+app.use(express.static(path.join(__dirname, "/frontend/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
+});
 
 app.use((error, req, res, next) => {
   const statusCode = error.statusCode || 500;

@@ -3,11 +3,14 @@ import { useSelector } from "react-redux";
 import { MdDelete } from "react-icons/md";
 import { IoCreateOutline } from "react-icons/io5";
 import { RiHistoryFill } from "react-icons/ri";
-
+import { FaSearch } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
+import { MdOutlineContentPasteSearch } from "react-icons/md";
+
 import Menu from "../components/Menu";
 import { Link } from "react-router-dom";
 import MainButton from "../components/MainButton";
+import ErrorMessage from "../components/ErrorMessage";
 
 export default function Tasks() {
   const { currentUser } = useSelector((state) => state.user);
@@ -15,28 +18,46 @@ export default function Tasks() {
   const [taskId, setTaskId] = useState(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isInitialFetchDone, setIsInitialFetchDone] = useState(false);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     isCompleted: false,
   });
 
-  useEffect(() => {
-    getTasks();
-  }, [currentUser]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [completedFilter, setCompletedFilter] = useState("all");
 
-  const getTasks = async () => {
-    if (!currentUser) return;
-    try {
-      const res = await fetch(`/api/get-tasks/${currentUser._id}`);
-      const data = await res.json();
-      if (data) {
-        setTasks(data);
-      }
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    if (isUpdateOpen || isDeleteOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
     }
-  };
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isUpdateOpen, isDeleteOpen]);
+
+  useEffect(() => {
+    const getTasks = async () => {
+      if (!currentUser) return;
+      try {
+        const res = await fetch(`/api/get-tasks/${currentUser._id}`);
+        const data = await res.json();
+        if (data) {
+          setTasks(data);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsInitialFetchDone(true);
+      }
+    };
+    getTasks();
+  }, [currentUser, searchTerm, completedFilter]);
 
   const handleDeleteTask = async () => {
     if (!taskId) return;
@@ -99,9 +120,64 @@ export default function Tasks() {
       console.log(error);
     }
   };
+
+  const handleTaskSearch = async () => {
+    try {
+      // Construct the URL with query parameters
+      const url = `/api/search-tasks?query=${encodeURIComponent(
+        searchTerm
+      )}&completedFilter=${completedFilter}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+      }
+      setTasks(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="flex flex-col justify-center items-center p-4 dark:bg-gray-950 ">
-      <h1 className="text-2xl uppercase">Tasks</h1>
+    <div className="flex flex-col justify-center items-center p-4 dark:bg-gray-950">
+      <h1 className="text-2xl uppercase dark:text-white">Tasks</h1>
+      <div className="flex flex-row items-center justify-center space-x-4 my-5">
+        <input
+          type="search"
+          name="search"
+          id="search"
+          className="w-full max-w-md px-4 py-2 text-gray-700 dark:text-white bg-transparent border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400 dark:focus:ring-teal-600 transition duration-200"
+          placeholder="Search tasks..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleTaskSearch()}
+          aria-label="Search tasks"
+        />
+        <select
+          name="completedFilter"
+          id="completedFilter"
+          className="px-4 py-2 text-gray-700 dark:text-white bg-transparent border border-gray-300 dark:border-gray-600 rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-400 dark:focus:ring-teal-600 transition duration-200"
+          value={completedFilter}
+          onChange={(e) => setCompletedFilter(e.target.value)}
+          aria-label="Filter by completion status"
+        >
+          <option
+            value=""
+            disabled
+            className="text-gray-400 dark:text-gray-500"
+          >
+            Please select
+          </option>
+          <option value="all">All</option>
+          <option value="true">Completed</option>
+          <option value="false">Pending</option>
+        </select>
+        <FaSearch
+          className="text-teal-400 text-2xl cursor-pointer hover:text-teal-500 dark:hover:text-teal-300 transition duration-200"
+          onClick={handleTaskSearch}
+          aria-label="Search"
+        />
+      </div>
       {Array.isArray(tasks) && tasks.length > 0 ? (
         <ul>
           {tasks.map((task) => (
@@ -169,7 +245,17 @@ export default function Tasks() {
             </li>
           ))}
         </ul>
-      ) : (
+      ) : searchTerm !== "" || completedFilter !== "all" ? (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-gray-700 rounded-lg shadow-2xl p-8 bg-gradient-to-r from-slate-800 to-slate-900 text-white">
+          <div className="flex justify-center items-center my-5">
+            <MdOutlineContentPasteSearch className="text-5xl" />
+          </div>
+          <ErrorMessage
+            message={`Your search "${searchTerm}" did not match any documents.`}
+            className="dark:text-white text-xl font-semibold"
+          />
+        </div>
+      ) : isInitialFetchDone ? (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-gray-700 rounded-lg shadow-2xl p-8 bg-gradient-to-r from-slate-800 to-slate-900 text-white">
           <p className="text-center font-bold text-3xl p-3">
             You have no tasks yet!
@@ -181,11 +267,19 @@ export default function Tasks() {
             </Link>
           </div>
         </div>
-      )}
+      ) : null}
       <Menu />
       {isDeleteOpen && (
-        <div className="absolute inset-0 backdrop-blur-sm bg-black/50 flex justify-center items-center px-4 flex-wrap animate-fade-in">
-          <div className="shadow-xl bg-white dark:bg-gray-900 rounded w-full max-w-md md:max-w-lg lg:max-w-xl transition-all">
+        <div
+          className="fixed inset-0 z-50 backdrop-blur-sm bg-black/50 flex justify-center items-center px-4 flex-wrap animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsDeleteOpen(false);
+          }}
+        >
+          <div
+            className="shadow-xl bg-white dark:bg-gray-900 rounded w-full max-w-md md:max-w-lg lg:max-w-xl transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div role="alert" aria-label="Confirm account deletion">
               <div className="bg-gradient-to-r from-red-400 to-rose-600 text-white font-bold rounded-t px-2 py-4 text-xl flex items-center gap-1">
                 <MdDelete className="text-white text-2xl" />
@@ -218,8 +312,16 @@ export default function Tasks() {
         </div>
       )}
       {isUpdateOpen && (
-        <div className=" backdrop-blur-md inset-0 absolute bg-black/50 flex justify-center items-center animate-fade-in ">
-          <div className="shadow-xl bg-white dark:text-white mx-auto dark:bg-gradient-to-r from-slate-800 to-slate-900  rounded w-full rounded-t-lg max-w-md md:max-w-lg lg:max-w-xl transition-all">
+        <div
+          className="  backdrop-blur-md inset-0 fixed z-50  bg-black/50 flex justify-center items-center animate-fade-in "
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsUpdateOpen(false);
+          }}
+        >
+          <div
+            className="shadow-xl bg-white dark:text-white mx-auto dark:bg-gradient-to-r from-slate-800 to-slate-900  rounded w-full rounded-t-lg max-w-md md:max-w-lg lg:max-w-xl transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="bg-gradient-to-r flex justify-center items-center gap-2 from-green-400 to-teal-600 w-full rounded-t-lg p-4">
               <FaEdit className="text-white text-xl" />
               <h2 className="text-white text-center uppercase text-xl">
