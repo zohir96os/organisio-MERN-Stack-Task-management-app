@@ -22,7 +22,9 @@ const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
-  .connect(MONGO_URI)
+  .connect(MONGO_URI, {
+    serverSelectionTimeoutMS: 30000,
+  })
   .then(() => {
     console.log("Connected to db");
   })
