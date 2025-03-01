@@ -1,9 +1,10 @@
 import User from "../models/user.model.js";
+import mongoose from "mongoose";
 import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import generator from "generate-password";
-import { generateFromEmail, generateUsername } from "unique-username-generator";
+import { generateFromEmail } from "unique-username-generator";
 
 export const signUp = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -26,6 +27,7 @@ export const signUp = async (req, res, next) => {
 
 export const signIn = async (req, res, next) => {
   try {
+    console.log("Database connection state:", mongoose.connection.readyState);
     const { email, password } = req.body;
     const validUser = await User.findOne({ email });
     if (!validUser) return next(errorHandler(404, "No user found!"));

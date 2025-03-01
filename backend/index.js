@@ -18,23 +18,20 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
-  .connect(MONGO_URI, {
-    serverSelectionTimeoutMS: 30000,
-  })
+  .connect(MONGO_URI)
   .then(() => {
     console.log("Connected to db");
+    app.listen(PORT, () => {
+      console.log(`Server up on port: ${PORT}`);
+    });
   })
   .catch((error) => {
-    console.log(error);
+    console.error("Database connection error:", error);
   });
-
-app.listen(PORT, () => {
-  console.log(`Server up on port: ${PORT}`);
-});
 
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
